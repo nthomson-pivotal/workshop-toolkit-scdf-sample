@@ -70,8 +70,34 @@ spec:
 ---
 EOF
 
-  kubectl apply -f server/server-deployment.yaml
   cat <<EOF | kubectl apply -f -
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scdf-server
+  labels:
+    app: scdf-server
+data:
+  application.yaml: |-
+    spring:
+      cloud:
+        dataflow:
+          task:
+            platform:
+              kubernetes:
+                accounts:
+                  default:
+                    limits:
+                      memory: 1024Mi
+      datasource:
+        url: jdbc:mysql://${MYSQL_SERVICE_HOST}:${MYSQL_SERVICE_PORT}/mysql
+        username: root
+        password: ${mysql-root-password}
+        driverClassName: org.mariadb.jdbc.Driver
+        testOnBorrow: true
+        validationQuery: "SELECT 1"
+---
 kind: Service
 apiVersion: v1
 metadata:
@@ -86,11 +112,13 @@ spec:
   selector:
     app: scdf-server
 EOF
-popd
 
+  kubectl apply -f server/server-deployment.yaml
+popd
+  
 wget -q -O $CODER_DIR/bin/dataflow-shell.jar https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/${SCDF_VERSION}.RELEASE/spring-cloud-dataflow-shell-${SCDF_VERSION}.RELEASE.jar
 cat << EOF > $CODER_DIR/bin/dataflow-shell
-java -jar $CODER_DIR/bin/dataflow-shell.jar
+java -jar $CODER_DIR/bin/dataflow-shell.jar --dataflow.uri=http://scdf-server $@
 EOF
 
 chmod +x $CODER_DIR/bin/dataflow-shell
