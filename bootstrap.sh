@@ -17,11 +17,11 @@ fi
 if [ ! -z "$CF_API" ]; then
   $BIN_DIR/cf login -a $CF_API -u admin -p $CF_PASSWORD --skip-ssl-validation -o system
 
-  $BIN_DIR/cf create-space -o workspaces $WORKSHOP_ID
+  $BIN_DIR/cf apply-space -o workspaces $WORKSHOP_ID
 
   password=$(pwgen 8 1)
 
-  $BIN_DIR/cf create-user $WORKSHOP_ID $password
+  $BIN_DIR/cf apply-user $WORKSHOP_ID $password
   $BIN_DIR/cf set-space-role $WORKSHOP_ID workspaces $WORKSHOP_ID SpaceDeveloper
 
   cat << EOF > /mnt/coder/bashrc.d/cf.bashrc
@@ -38,23 +38,23 @@ chmod +x /mnt/coder/bashrc.d/cf.bashrc
 
 SCDF_VERSION=2.3.1
 
-wget https://github.com/spring-cloud/spring-cloud-dataflow/archive/v${SCDF_VERSION}.RELEASE.zip
+wget -q https://github.com/spring-cloud/spring-cloud-dataflow/archive/v${SCDF_VERSION}.RELEASE.zip
 
-unzip v${SCDF_VERSION}.RELEASE.zip
+unzip -qq v${SCDF_VERSION}.RELEASE.zip
 
 pushd spring-cloud-dataflow-${SCDF_VERSION}.RELEASE/src/kubernetes
-  kubectl create -f rabbitmq
+  kubectl apply -f rabbitmq
   
-  kubectl create -f mysql
+  kubectl apply -f mysql
 
-  kubectl create -f server/roles 
-  kubectl create -f server/rolebinding 
-  kubectl create -f server/account
+  kubectl apply -f server/roles 
+  kubectl apply -f server/rolebinding 
+  kubectl apply -f server/account
 
-  kubectl create -f skipper/skipper-config-rabbit.yaml
-  kubectl create -f skipper/skipper-deployment.yaml
-  kubectl create -f skipper/skipper-svc.yaml
+  kubectl apply -f skipper/skipper-config-rabbit.yaml
+  kubectl apply -f skipper/skipper-deployment.yaml
+  kubectl apply -f skipper/skipper-svc.yaml
 
-  kubectl create -f server/server-svc.yaml
-  kubectl create -f server/server-deployment.yaml
+  kubectl apply -f server/server-svc.yaml
+  kubectl apply -f server/server-deployment.yaml
 popd
