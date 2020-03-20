@@ -26,3 +26,6 @@ if [ ! -z "$CF_API" ]; then
   # Log in to CF CLI
   cf login -a $CF_API -u $WORKSHOP_ID -p $CF_PASSWORD --skip-ssl-validation
 fi
+
+# Link the SCDF starters downloaded
+ln -s $CODER_DIR/starters ~/starters

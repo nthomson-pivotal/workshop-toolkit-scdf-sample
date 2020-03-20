@@ -87,3 +87,17 @@ spec:
     app: scdf-server
 EOF
 popd
+
+wget -q -O $CODER_DIR/bin/dataflow-shell.jar https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/${SCDF_VERSION}.RELEASE/spring-cloud-dataflow-shell-${SCDF_VERSION}.RELEASE.jar
+cat << EOF > $CODER_DIR/bin/dataflow-shell
+java -jar $CODER_DIR/bin/dataflow-shell.jar
+EOF
+
+chmod +x $CODER_DIR/bin/dataflow-shell
+
+mkdir -p $CODER_DIR/starters
+
+wget -q -O $CODER_DIR/starters/http-source-rabbit.jar https://repo.spring.io/libs-release/org/springframework/cloud/stream/app/http-source-rabbit/2.1.0.RELEASE/http-source-rabbit-2.1.0.RELEASE.jar
+wget -q -O $CODER_DIR/starters/log-sink-rabbit.jar https://repo.spring.io/libs-release/org/springframework/cloud/stream/app/log-sink-rabbit/2.1.0.RELEASE/log-sink-rabbit-2.1.0.RELEASE.jar
+wget -q -O $CODER_DIR/starters/filter-processor-rabbit.jar https://repo.spring.io/libs-release/org/springframework/cloud/stream/app/filter-processor-rabbit/2.1.0.RELEASE/
+wget -q -O $CODER_DIR/starters/groovy-transform-processor-rabbit.jar https://repo.spring.io/libs-release/org/springframework/cloud/stream/app/groovy-transform-processor-rabbit/2.1.0.RELEASE/groovy-transform-processor-rabbit-2.1.0.RELEASE.jar
