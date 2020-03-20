@@ -53,8 +53,37 @@ pushd spring-cloud-dataflow-${SCDF_VERSION}.RELEASE/src/kubernetes
 
   kubectl apply -f skipper/skipper-config-rabbit.yaml
   kubectl apply -f skipper/skipper-deployment.yaml
-  kubectl apply -f skipper/skipper-svc.yaml
+  cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: skipper
+  labels:
+    app: skipper
+    spring-deployment-id: scdf
+spec:
+  ports:
+  - port: 80
+    targetPort: 7577
+  selector:
+    app: skipper
+---
+EOF
 
-  kubectl apply -f server/server-svc.yaml
   kubectl apply -f server/server-deployment.yaml
+  cat <<EOF | kubectl apply -f -
+kind: Service
+apiVersion: v1
+metadata:
+  name: scdf-server
+  labels:
+    app: scdf-server
+    spring-deployment-id: scdf
+spec:
+  ports:
+    - port: 80
+      name: scdf-server
+  selector:
+    app: scdf-server
+EOF
 popd
