@@ -47,9 +47,9 @@ pushd spring-cloud-dataflow-${SCDF_VERSION}.RELEASE/src/kubernetes
   
   kubectl apply -f mysql
 
-  kubectl apply -f server/roles 
-  kubectl apply -f server/rolebinding 
-  kubectl apply -f server/account
+  kubectl apply -f server/server-roles.yaml
+  kubectl apply -f server/server-rolebinding.yaml
+  kubectl apply -f server/service-account.yaml
 
   kubectl apply -f skipper/skipper-config-rabbit.yaml
   kubectl apply -f skipper/skipper-deployment.yaml
